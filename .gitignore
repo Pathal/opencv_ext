@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+.vs/*
+opencv_ext.sln
+opencv_ext/*
