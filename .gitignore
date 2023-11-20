@@ -33,3 +33,4 @@
 .vs/*
 opencv_ext.sln
 opencv_ext/*
+*.pdb
