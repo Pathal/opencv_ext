@@ -29,9 +29,10 @@ void main() {
 		cv::Size row_dim(10, 1);
 		uint8_t row_data[] = { 0, 4, 4, 5, 9, 14, 20, 40, 100, 101 };
 		cv::Mat single_row(1, 10, CV_8UC1, row_data);
-		std::optional<float> median_val = cvx::matlab::median16U(single_row);
+		std::optional<float> median_val = cvx::matlab::median8U(single_row);
 		assert(median_val.has_value());
 		assert(compare_float(median_val.value(), 11.5));
+		std::cout << median_val.value() << std::endl;
 	}
 
 

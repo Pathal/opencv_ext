@@ -174,7 +174,13 @@ std::optional<float> cvx::matlab::median8U(const cv::Mat& inp) {
 	auto m = res.begin() + res.size() / 2;
 	std::nth_element(res.begin(), m, res.end());
 
-	return res[res.size() / 2];
+	float end_res = res[res.size() / 2];
+	if (res.size() % 2 == 0) {
+		end_res += res[res.size() / 2 - 1];
+		end_res /= 2;
+	}
+
+	return end_res;
 }
 
 std::optional<float> cvx::matlab::median16U(const cv::Mat& inp) {
@@ -187,7 +193,13 @@ std::optional<float> cvx::matlab::median16U(const cv::Mat& inp) {
 	auto m = res.begin() + res.size() / 2;
 	std::nth_element(res.begin(), m, res.end());
 
-	return res[res.size() / 2];
+	float end_res = res[res.size() / 2];
+	if (res.size() % 2 == 0) {
+		end_res += res[res.size() / 2 - 1];
+		end_res /= 2;
+	}
+	
+	return end_res;
 }
 
 std::optional<float> cvx::matlab::median32F(const cv::Mat& inp) {
@@ -200,7 +212,13 @@ std::optional<float> cvx::matlab::median32F(const cv::Mat& inp) {
 	auto m = res.begin() + res.size() / 2;
 	std::nth_element(res.begin(), m, res.end());
 
-	return res[res.size() / 2];
+	float end_res = res[res.size() / 2];
+	if (res.size() % 2 == 0) {
+		end_res += res[res.size() / 2 - 1];
+		end_res /= 2;
+	}
+
+	return end_res;
 }
 
 std::optional<float> cvx::matlab::median64F(const cv::Mat& inp) {
@@ -213,5 +231,11 @@ std::optional<float> cvx::matlab::median64F(const cv::Mat& inp) {
 	auto m = res.begin() + res.size() / 2;
 	std::nth_element(res.begin(), m, res.end());
 
-	return res[res.size() / 2];
+	float end_res = res[res.size() / 2];
+	if (res.size() % 2 == 0) {
+		end_res += res[res.size() / 2 - 1];
+		end_res /= 2;
+	}
+
+	return end_res;
 }
