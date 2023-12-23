@@ -41,15 +41,10 @@ namespace cvx {
 
 		void gradiant2D(const cv::Mat& inp, cv::Mat& gx, cv::Mat& gy);
 		std::array<cv::Mat, 2> gradiant2D(const cv::Mat& inp);
-	
+	}
+
+	namespace common {
 		// Median
-		/*
-		* Finds the median value, and returns it as a float.
-		* Only supports continguous matrices
-		*/
-		std::optional<float> median8U(const cv::Mat&);
-		std::optional<float> median16U(const cv::Mat&);
-		std::optional<float> median32F(const cv::Mat&);
-		std::optional<float> median64F(const cv::Mat&);
+		std::optional<float> median(const cv::Mat&);
 	}
 };

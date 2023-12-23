@@ -8,8 +8,25 @@
 
 namespace cvx {
 	namespace matlab {
-		void imsharpen(const cv::Mat& inp, cv::Mat& dst, double ratio, cv::Size kSize, double sigmaX, double sigmaY = 0, int borderType = cv::BORDER_DEFAULT, cv::Mat swap = cv::Mat());
-		cv::Mat imsharpen(const cv::Mat& inp, double ratio, cv::Size kSize, double sigmaX, double sigmaY = 0, int borderType = cv::BORDER_DEFAULT, cv::Mat swap = cv::Mat());
+		void imsharpen(const cv::Mat& inp,
+			cv::Mat& dst,
+			double ratio,
+			cv::Size kSize,
+			double sigmaX,
+			double sigmaY = 0,
+			int borderType = cv::BORDER_DEFAULT,
+			cv::Mat swap = cv::Mat());
+		cv::Mat imsharpen(const cv::Mat& inp,
+			double ratio,
+			cv::Size kSize,
+			double sigmaX,
+			double sigmaY = 0,
+			int borderType = cv::BORDER_DEFAULT,
+			cv::Mat swap = cv::Mat());
+	}
 
+	namespace common {
+		void clamp(cv::Mat& inp, cv::Scalar min, cv::Scalar max);
+		void clamp(cv::Mat& inp, cv::Mat& dest, cv::Scalar min, cv::Scalar max);
 	}
 };

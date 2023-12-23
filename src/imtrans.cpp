@@ -13,3 +13,13 @@ cv::Mat cvx::matlab::imsharpen(const cv::Mat& inp, double ratio, cv::Size kSize,
 	cvx::matlab::imsharpen(inp, dst, ratio, kSize, sigmaX, sigmaY, borderType, swap);
 	return dst;
 }
+
+// broken?!?
+void cvx::common::clamp(cv::Mat& inp, cv::Scalar minVal, cv::Scalar maxVal) {
+	cv::min(inp, maxVal, inp);
+	cv::max(inp, minVal, inp);
+}
+void cvx::common::clamp(cv::Mat& inp, cv::Mat& dest, cv::Scalar minVal, cv::Scalar maxVal) {
+	cv::min(inp, maxVal, dest);
+	cv::max(dest, minVal, dest);
+}

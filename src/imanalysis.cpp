@@ -1,5 +1,9 @@
 #include "imanalysis.hpp"
 
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
 /**
 * Feature Extraction
 */
@@ -164,78 +168,59 @@ std::array<cv::Mat, 2> cvx::matlab::gradiant2D(const cv::Mat& inp) {
 /**
 * Median
 */
-std::optional<float> cvx::matlab::median8U(const cv::Mat& inp) {
-	// surely there's a more performant way of doing this...
-	if (!inp.isContinuous()) { return std::nullopt; }
+std::optional<float> cvx::common::median(const cv::Mat& inp) {
+	cv::Mat hist;
+	double minVal, maxVal;
+	cv::minMaxIdx(inp, &minVal, &maxVal);
+	int histSize = maxVal+1;
+	float range[] = { minVal, maxVal-minVal };// histSize}; //the upper boundary is exclusive
+	const float* histRange[] = { range };
+	// "hist" is ALWAYS a 32F
+	cv::calcHist(&inp, 1, 0, cv::Mat(), hist, 1, &histSize, histRange, true, false);
 
-	std::vector<char> res;
+	bool PLOT_HISTOGRAM = false;
+	if (PLOT_HISTOGRAM) {
+		cv::minMaxIdx(hist, &minVal, &maxVal);
 
-	res.assign((char*)inp.data, (char*)inp.data + inp.total());
-	auto m = res.begin() + res.size() / 2;
-	std::nth_element(res.begin(), m, res.end());
+		int hist_w = 1000;
+		int hist_h = 600;
+		float bin_w = (double)hist_w / (double)histSize;
+		float bin_h = (double)hist_h / (double)maxVal;
 
-	float end_res = res[res.size() / 2];
-	if (res.size() % 2 == 0) {
-		end_res += res[res.size() / 2 - 1];
-		end_res /= 2;
+		cv::Mat histImage(hist_h, hist_w, CV_8UC1, cv::Scalar(0, 0, 0));
+		for (int i = 1; i < histSize; i++) {
+			auto prev = (int)cvRound(hist.at<float>(i - 1));
+			auto next = (int)cvRound(hist.at<float>(i));
+			cv::line(histImage,
+				cv::Point(bin_w * (i - 1), hist_h - bin_h*prev),
+				cv::Point(bin_w * (i), hist_h - bin_h*next),
+				cv::Scalar(255, 0, 0),
+				1, 8, 0);
+		}
+
+		cv::imshow("histogram", histImage);
+		cv::waitKey(0);
 	}
 
-	return end_res;
-}
 
-std::optional<float> cvx::matlab::median16U(const cv::Mat& inp) {
-	// surely there's a more performant way of doing this...
-	if (!inp.isContinuous()) { return std::nullopt; }
-
-	std::vector<uint16_t> res;
-
-	res.assign((uint16_t*)inp.data, (uint16_t*)inp.data + inp.total());
-	auto m = res.begin() + res.size() / 2;
-	std::nth_element(res.begin(), m, res.end());
-
-	float end_res = res[res.size() / 2];
-	if (res.size() % 2 == 0) {
-		end_res += res[res.size() / 2 - 1];
-		end_res /= 2;
-	}
-	
-	return end_res;
-}
-
-std::optional<float> cvx::matlab::median32F(const cv::Mat& inp) {
-	// surely there's a more performant way of doing this...
-	if (!inp.isContinuous()) { return std::nullopt; }
-
-	std::vector<float> res;
-
-	res.assign((float*)inp.data, (float*)inp.data + inp.total());
-	auto m = res.begin() + res.size() / 2;
-	std::nth_element(res.begin(), m, res.end());
-
-	float end_res = res[res.size() / 2];
-	if (res.size() % 2 == 0) {
-		end_res += res[res.size() / 2 - 1];
-		end_res /= 2;
+	int idx = 0;
+	int ridx = hist.rows-1;
+	float cum = 0;
+	float rcum = 0;
+	while (idx < ridx-1) {
+		if (cum < rcum) {
+			// since the left hand side is smaller, pull from the left
+			auto val = hist.at<float>(idx);
+			cum += val;
+			idx++;
+		} else {
+			// since the right hand side is smaller (or equal), pull from the right
+			auto val = hist.at<float>(ridx);
+			rcum += val;
+			ridx--;
+		}
 	}
 
-	return end_res;
-}
-
-std::optional<float> cvx::matlab::median64F(const cv::Mat& inp) {
-	// surely there's a more performant way of doing this...
-	if (!inp.isContinuous()) { return std::nullopt; }
-
-	std::vector<double> res;
-
-	res.assign((double*)inp.data, (double*)inp.data + inp.total());
-	auto m = res.begin() + res.size() / 2;
-	std::nth_element(res.begin(), m, res.end());
-
-	float end_res = res[res.size() / 2];
-	if (res.size() % 2 == 0) {
-		end_res += res[res.size() / 2 - 1];
-		end_res /= 2;
-	}
-
-	return end_res;
+	// I don't think this is good enough, but it's close enough
+	return idx;
 }
