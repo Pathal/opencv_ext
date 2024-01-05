@@ -4,4 +4,8 @@
 
 namespace cvx {
 	float getPixelAsFloat(const cv::Mat& inp, int x, int y);
+
+	namespace matlab {
+		void quatmultiply();
+	};
 };

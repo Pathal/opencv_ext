@@ -1,5 +1,6 @@
 # opencv_ext
-Extension of opencv that more closely mimics other interfaces for ergonomics and portability
+Extension of opencv that more closely mimics other interfaces for ergonomics and portability.
+Performance is not the highest priority, accuracy is. 
 
 Functions are broken up into namespace categories, and everything exists under the cvx namespace, and GPU functionality is similar but with 'cuda' between cvx and the appropriate namespace.
 - core (under the root namespace)

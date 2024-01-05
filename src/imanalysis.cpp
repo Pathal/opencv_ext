@@ -7,14 +7,28 @@
 /**
 * Feature Extraction
 */
-std::pair<std::vector<cv::KeyPoint>, cv::Mat> cvx::matlab::detectSURFFeatures(const cv::Mat& inp, float MetricThreshold, int NumOctaves, int NumScaleLevels, cv::Rect ROI) {
+inline std::pair<std::vector<cv::KeyPoint>, cv::Mat> cvx::matlab::detectSURFFeatures(
+	const cv::Mat& inp,
+	float MetricThreshold,
+	int NumOctaves,
+	int NumScaleLevels,
+	cv::Rect ROI)
+{
 	std::vector<cv::KeyPoint> keypoints;
 	cv::Mat descriptors;
 	cvx::matlab::detectSURFFeatures(inp, keypoints, descriptors, MetricThreshold, NumOctaves, NumScaleLevels, ROI);
 	return { keypoints, descriptors };
 }
 
-void cvx::matlab::detectSURFFeatures(const cv::Mat& inp, std::vector<cv::KeyPoint>& output, cv::Mat& descriptors, float MetricThreshold, int NumOctaves, int NumScaleLevels, cv::Rect ROI) {
+void cvx::matlab::detectSURFFeatures(
+	const cv::Mat& inp,
+	std::vector<cv::KeyPoint>& output,
+	cv::Mat& descriptors,
+	float MetricThreshold,
+	int NumOctaves,
+	int NumScaleLevels,
+	cv::Rect ROI)
+{
 	CV_Assert(MetricThreshold > 0);
 	CV_Assert(NumOctaves > 1);
 	CV_Assert(NumScaleLevels >= 3);
@@ -33,12 +47,23 @@ void cvx::matlab::detectSURFFeatures(const cv::Mat& inp, std::vector<cv::KeyPoin
 /**
 * Feature Matching
 */
-std::vector<cv::DMatch> cvx::matlab::matchFeatures(const cv::Mat& descriptors1, const cv::Mat& descriptors2, float ratio_thresh, int max_matches) {
+inline std::vector<cv::DMatch> cvx::matlab::matchFeatures(
+	const cv::Mat& descriptors1,
+	const cv::Mat& descriptors2,
+	float ratio_thresh,
+	int max_matches)
+{
 	std::vector<cv::DMatch> good_matches;
 	cvx::matlab::matchFeatures(descriptors1, descriptors2, good_matches, ratio_thresh, max_matches);
 	return good_matches;
 }
-void cvx::matlab::matchFeatures(const cv::Mat& descriptors1, const cv::Mat& descriptors2, std::vector<cv::DMatch>& output, float ratio_thresh, int max_matches) {
+void cvx::matlab::matchFeatures(
+	const cv::Mat& descriptors1,
+	const cv::Mat& descriptors2,
+	std::vector<cv::DMatch>& output,
+	float ratio_thresh,
+	int max_matches)
+{
 	cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
 	std::vector< std::vector<cv::DMatch> > knn_matches;
 	matcher->knnMatch(descriptors1, descriptors2, knn_matches, max_matches);
@@ -103,7 +128,7 @@ void cvx::matlab::gradiant1D(const cv::Mat& inp, cv::Mat& dst) {
 	}
 }
 
-cv::Mat cvx::matlab::gradiant1D(const cv::Mat& inp) {
+inline cv::Mat cvx::matlab::gradiant1D(const cv::Mat& inp) {
 	cv::Mat dst(inp.size(), CV_32FC1);
 	cvx::matlab::gradiant1D(inp, dst);
 	return dst;
@@ -157,7 +182,7 @@ void cvx::matlab::gradiant2D(const cv::Mat& inp, cv::Mat& gx, cv::Mat& gy) {
 	last_row.copyTo(gy(cv::Rect{ 0, inp.rows - 1, inp.cols, 1 }));
 }
 
-std::array<cv::Mat, 2> cvx::matlab::gradiant2D(const cv::Mat& inp) {
+inline std::array<cv::Mat, 2> cvx::matlab::gradiant2D(const cv::Mat& inp) {
 	cv::Mat gx(inp.size(), CV_32FC1);
 	cv::Mat gy(inp.size(), CV_32FC1);
 	cvx::matlab::gradiant2D(inp, gx, gy);
@@ -168,7 +193,7 @@ std::array<cv::Mat, 2> cvx::matlab::gradiant2D(const cv::Mat& inp) {
 /**
 * Median
 */
-std::optional<float> cvx::common::median(const cv::Mat& inp) {
+inline std::optional<float> cvx::common::median(const cv::Mat& inp) {
 	cv::Mat hist;
 	double minVal, maxVal;
 	cv::minMaxIdx(inp, &minVal, &maxVal);
@@ -221,6 +246,39 @@ std::optional<float> cvx::common::median(const cv::Mat& inp) {
 		}
 	}
 
-	// I don't think this is good enough, but it's close enough
+	// I don't think this is good enough, but it's close
 	return idx;
+}
+
+
+void cvx::matlab::estimateGeometricTransform(
+	std::vector<cv::Point2f>& obj,
+	std::vector<cv::Point2f>& scene,
+	std::vector<cv::DMatch>& matches,
+	double maxDistance,
+	double confidence,
+	int maxNumTrials)
+{
+	std::vector<cv::Point2f> good_obj;
+	std::vector<cv::Point2f> good_scene;
+
+	for (size_t i = 0; i < matches.size(); i++) {
+		auto& obj_loc = obj.at(matches[i].queryIdx);
+		auto& scene_loc = scene.at(matches[i].trainIdx);
+
+		cv::Point2f diff = obj_loc - scene_loc;
+		float magnitude = cv::sqrt(diff.x * diff.x + diff.y * diff.y);
+
+		if ( magnitude < maxDistance ) {
+			good_obj.push_back(obj_loc);
+			good_scene.push_back(scene_loc);
+		}
+	}
+
+	cv::Mat H = cv::findHomography(good_obj, good_scene, cv::RANSAC,
+		3.0, cv::Mat(), maxNumTrials, confidence/100.0);
+}
+
+void cvx::matlab::semanticSeg(cv::Mat& inp) {
+	// Next up!
 }
