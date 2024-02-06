@@ -14,6 +14,27 @@ cv::Mat cvx::matlab::imsharpen(const cv::Mat& inp, double ratio, cv::Size kSize,
 	return dst;
 }
 
+cv::Mat cvx::matlab::imerode(cv::Mat& inp, cv::Mat& strel) {
+	cv::Mat erosion_dst;
+	cv::erode(inp, erosion_dst, strel);
+	return erosion_dst;
+}
+cv::Mat cvx::matlab::imdilate(cv::Mat& inp, cv::Mat& strel) {
+	cv::Mat dilation_dst;
+	cv::dilate(inp, dilation_dst, strel);
+	return dilation_dst;
+}
+cv::Mat cvx::matlab::imopen(cv::Mat& inp, cv::Mat& strel) {
+	cv::Mat t = imerode(inp, strel);
+	return imdilate(t, strel);
+}
+cv::Mat cvx::matlab::imclose(cv::Mat& inp, cv::Mat& strel) {
+	cv::Mat t = imdilate(inp, strel);
+	return imerode(t, strel);
+}
+
+// Common Section
+
 void cvx::common::clamp(cv::Mat& inp, cv::Scalar minVal, cv::Scalar maxVal) {
 	cv::min(inp, maxVal, inp);
 	cv::max(inp, minVal, inp);

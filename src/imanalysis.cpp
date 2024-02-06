@@ -7,7 +7,7 @@
 /**
 * Feature Extraction
 */
-inline std::pair<std::vector<cv::KeyPoint>, cv::Mat> cvx::matlab::detectSURFFeatures(
+std::pair<std::vector<cv::KeyPoint>, cv::Mat> cvx::matlab::detectSURFFeatures(
 	const cv::Mat& inp,
 	float MetricThreshold,
 	int NumOctaves,
@@ -47,7 +47,7 @@ void cvx::matlab::detectSURFFeatures(
 /**
 * Feature Matching
 */
-inline std::vector<cv::DMatch> cvx::matlab::matchFeatures(
+std::vector<cv::DMatch> cvx::matlab::matchFeatures(
 	const cv::Mat& descriptors1,
 	const cv::Mat& descriptors2,
 	float ratio_thresh,
@@ -81,7 +81,7 @@ void cvx::matlab::matchFeatures(
 */
 void cvx::matlab::gradiant1D(const cv::Mat& inp, cv::Mat& dst) {
 	auto inpSize = inp.size();
-	if (dst.empty() || dst.type() != CV_32FC1) {
+	if (dst.empty() || dst.type() != CV_32FC1 || cv::Size(dst.cols, dst.rows) != inpSize) {
 		dst = cv::Mat(inpSize, CV_32FC1);
 	}
 
@@ -128,7 +128,7 @@ void cvx::matlab::gradiant1D(const cv::Mat& inp, cv::Mat& dst) {
 	}
 }
 
-inline cv::Mat cvx::matlab::gradiant1D(const cv::Mat& inp) {
+cv::Mat cvx::matlab::gradiant1D(const cv::Mat& inp) {
 	cv::Mat dst(inp.size(), CV_32FC1);
 	cvx::matlab::gradiant1D(inp, dst);
 	return dst;
@@ -138,10 +138,10 @@ void cvx::matlab::gradiant2D(const cv::Mat& inp, cv::Mat& gx, cv::Mat& gy) {
 	CV_Assert(inp.cols > 1 && inp.rows > 1);
 
 	auto inpSize = inp.size();
-	if (gx.empty() || gx.type() != CV_32FC1) {
+	if (gx.empty() || gx.type() != CV_32FC1 || cv::Size(gx.cols, gx.rows) != inpSize) {
 		gx = cv::Mat(inpSize, CV_32FC1);
 	}
-	if (gy.empty() || gy.type() != CV_32FC1) {
+	if (gy.empty() || gy.type() != CV_32FC1 || cv::Size(gy.cols, gy.rows) != inpSize) {
 		gy = cv::Mat(inpSize, CV_32FC1);
 	}
 
@@ -149,10 +149,14 @@ void cvx::matlab::gradiant2D(const cv::Mat& inp, cv::Mat& gx, cv::Mat& gy) {
 	cv::Mat_<float> gx_kernel(1, 3, CV_32FC1); gx_kernel << -0.5, 0.0, 0.5;
 	// first column 
 	cv::Mat first_column;
-	cv::subtract(inp(cv::Rect{ 1, 0, 1, inp.rows }), inp(cv::Rect{ 0,0, 1, inp.rows }), first_column);
+	cv::subtract(inp(cv::Rect{ 1, 0, 1, inp.rows }),
+				 inp(cv::Rect{ 0, 0, 1, inp.rows }),
+				 first_column);
 	// last column
 	cv::Mat last_column;
-	cv::subtract(inp(cv::Rect{ inp.cols - 1, 0, 1, inp.rows }), inp(cv::Rect{ inp.cols - 2,0, 1, inp.rows }), last_column);
+	cv::subtract(inp(cv::Rect{ inp.cols - 1, 0, 1, inp.rows }),
+				 inp(cv::Rect{ inp.cols - 2, 0, 1, inp.rows }),
+				 last_column);
 	cv::filter2D(inp(cv::Rect{ 1,0, inp.cols - 2, inp.rows }),
 		gx(cv::Rect{ 1,0, inp.cols - 2, inp.rows }),
 		CV_32FC1,
@@ -182,7 +186,7 @@ void cvx::matlab::gradiant2D(const cv::Mat& inp, cv::Mat& gx, cv::Mat& gy) {
 	last_row.copyTo(gy(cv::Rect{ 0, inp.rows - 1, inp.cols, 1 }));
 }
 
-inline std::array<cv::Mat, 2> cvx::matlab::gradiant2D(const cv::Mat& inp) {
+std::array<cv::Mat, 2> cvx::matlab::gradiant2D(const cv::Mat& inp) {
 	cv::Mat gx(inp.size(), CV_32FC1);
 	cv::Mat gy(inp.size(), CV_32FC1);
 	cvx::matlab::gradiant2D(inp, gx, gy);
@@ -193,7 +197,7 @@ inline std::array<cv::Mat, 2> cvx::matlab::gradiant2D(const cv::Mat& inp) {
 /**
 * Median
 */
-inline std::optional<float> cvx::common::median(const cv::Mat& inp) {
+std::optional<float> cvx::common::median(const cv::Mat& inp) {
 	cv::Mat hist;
 	double minVal, maxVal;
 	cv::minMaxIdx(inp, &minVal, &maxVal);
@@ -279,6 +283,9 @@ void cvx::matlab::estimateGeometricTransform(
 		3.0, cv::Mat(), maxNumTrials, confidence/100.0);
 }
 
+/**
+* Semantic Segmentation
+*/
 void cvx::matlab::semanticSeg(cv::Mat& inp) {
 	// Next up!
 }

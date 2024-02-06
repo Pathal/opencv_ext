@@ -12,7 +12,7 @@
 namespace cvx {
 	namespace matlab {
 		// detectSURFFeatures
-		inline std::pair<std::vector<cv::KeyPoint>, cv::Mat> detectSURFFeatures(
+		std::pair<std::vector<cv::KeyPoint>, cv::Mat> detectSURFFeatures(
 			const cv::Mat& inp,
 			float MetricThreshold = 1000,
 			int NumOctaves = 3,
@@ -28,7 +28,7 @@ namespace cvx {
 			cv::Rect ROI = cv::Rect());
 
 		// matchFeatures
-		inline std::vector<cv::DMatch> matchFeatures(
+		std::vector<cv::DMatch> matchFeatures(
 			const cv::Mat& descriptors1,
 			const cv::Mat& descriptors2,
 			float ratio_thresh = 0.3,
@@ -42,10 +42,10 @@ namespace cvx {
 
 		// Gradiant
 		void gradiant1D(const cv::Mat& inp, cv::Mat& dst);
-		inline cv::Mat gradiant1D(const cv::Mat& inp);
+		cv::Mat gradiant1D(const cv::Mat& inp);
 
 		void gradiant2D(const cv::Mat& inp, cv::Mat& gx, cv::Mat& gy);
-		inline std::array<cv::Mat, 2> gradiant2D(const cv::Mat& inp);
+		std::array<cv::Mat, 2> gradiant2D(const cv::Mat& inp);
 
 		// estimateGeometricTransform
 		void estimateGeometricTransform(

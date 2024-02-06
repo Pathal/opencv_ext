@@ -23,6 +23,15 @@ namespace cvx {
 			double sigmaY = 0,
 			int borderType = cv::BORDER_DEFAULT,
 			cv::Mat swap = cv::Mat());
+
+
+		cv::Mat imerode(cv::Mat& inp, cv::Mat& strel);
+		cv::Mat imdilate(cv::Mat& inp, cv::Mat& strel);
+		// imopen is a erosion followed by a dilation
+		cv::Mat imopen(cv::Mat& inp, cv::Mat& strel);
+		// imclose is a dilation followed by an erosion
+		cv::Mat imclose(cv::Mat& inp, cv::Mat& strel);
+
 	}
 
 	namespace common {

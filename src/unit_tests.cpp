@@ -18,7 +18,7 @@ const bool TEST_FEATURE_EXTRACT = true;
 const bool TEST_CLAMP = true;
 const bool STEP_THROUGH_UNIT_TESTS = false;
 
-bool compare_float(float x, float y, float epsilon = 0.001f) {
+bool compare_float(float x, float y, float epsilon = 0.0001f) {
 	if (fabs(x - y) < epsilon)
 		return true; //they are same
 	return false; //they are not same
